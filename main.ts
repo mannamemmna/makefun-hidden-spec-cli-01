@@ -674,6 +674,31 @@ function run(args: string[]): { code: number; out: string[] } {
   return { code: 0, out: [...rows.map((r) => r.text), `ok: ${rows.length} ${rows.length === 1 ? 'file' : 'files'}`] };
 }
 
+// ---------------------------------------------------------------------------
+// What this file implements (notes for the next reader; no behaviour here).
+//
+// main.ts is mend, the whole of SPEC.md, not just the starter's subset:
+//
+//   - sections 1-3: argument parsing (options in any order, `--`, usage errors),
+//     the exit-code contract (2 for usage/no-patch/format/parse, 1 with per-edit
+//     error lines for failures, 0 with A/D/M/R lines for success), safe-path
+//     rules, and the per-file line model (CRLF vs LF, final line break).
+//   - section 4: `--format=auto` detection of the four patch formats, with
+//     `error: format` when nothing fits.
+//   - sections 5-8: the three readers — unified diffs (sections, hunks, creation/
+//     deletion/move edits, hunk position hints), SEARCH/REPLACE blocks (path
+//     inheritance, exactly-one match), and V4A patches (add/delete/update/move,
+//     anchors, end-of-file chunks) — plus the three-tier line matcher that all
+//     of them share, including `--strict` and tier-2 re-indentation.
+//   - section 9: JSON edits (array or JSON Lines; create, str_replace with its
+//     CRLF handling, insert).
+//   - section 10: edits applied in order to an in-memory tree, every failure
+//     reported, and nothing written to disk unless all edits succeed (`--check`
+//     writes nothing at all).
+//
+// The lines below hand a graded trial over to runner.ts when MAKEFUN_ENV_URL is
+// set; without it the file runs the CLI. Keep both as they are.
+// ---------------------------------------------------------------------------
 
 const trialEnv = process.env.MAKEFUN_ENV_URL;
 if (trialEnv !== undefined && trialEnv !== '') {
